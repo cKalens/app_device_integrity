@@ -6,7 +6,7 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   MethodChannelAppDeviceIntegrity platform = MethodChannelAppDeviceIntegrity();
-  const MethodChannel channel = MethodChannel('app_device_integrity');
+  const MethodChannel channel = MethodChannel('app_attestation');
 
   setUp(() {
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
@@ -27,6 +27,6 @@ void main() {
     expect(
         await platform.getAttestationServiceSupport(
             challengeString: 'UUID_TEST'),
-        'UUID_RESPONSE');
+        '42');
   });
 }

@@ -8,11 +8,14 @@ import com.google.android.play.core.integrity.IntegrityTokenRequest
 import android.content.Context
 import android.util.Base64
 
-class AppDeviceIntegrity(context: Context, cloudProjectNumber: Long) {
+class AppDeviceIntegrity(context: Context, cloudProjectNumber: Long, challenge: String?) {
 
-    //    var nonceBytes = ByteArray(40)
-//    var randomized = SecureRandom().nextBytes(nonceBytes)
-    var nonce = Base64.encodeToString(ByteArray(40),  Base64.URL_SAFE)
+    // If challenge is provided, use it as the nonce (base64 url-safe, no-wrap). Otherwise use a 40-byte placeholder.
+    var nonce = if (!challenge.isNullOrBlank()) {
+        Base64.encodeToString(challenge.toByteArray(), Base64.URL_SAFE or Base64.NO_WRAP)
+    } else {
+        Base64.encodeToString(ByteArray(40), Base64.URL_SAFE or Base64.NO_WRAP)
+    }
 
     // Create an instance of a manager.
     val integrityManager: IntegrityManager = IntegrityManagerFactory.create(context)

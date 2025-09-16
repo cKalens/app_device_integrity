@@ -6,8 +6,12 @@ class AppDeviceIntegrity {
   Future<String?> getAttestationServiceSupport(
       {required String challengeString, int? gcp}) {
     if (Platform.isAndroid) {
+      if (gcp == null) {
+        return Future.error(
+            ArgumentError("Android requires 'gcp' (Google Cloud Project Number)"));
+      }
       return AppDeviceIntegrityPlatform.instance.getAttestationServiceSupport(
-          challengeString: challengeString, gcp: gcp!);
+          challengeString: challengeString, gcp: gcp);
     }
 
     return AppDeviceIntegrityPlatform.instance

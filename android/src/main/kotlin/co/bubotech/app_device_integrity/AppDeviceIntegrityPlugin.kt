@@ -27,19 +27,23 @@ class AppDeviceIntegrityPlugin: FlutterPlugin, MethodCallHandler, ActivityAware 
 
   override fun onMethodCall(call: MethodCall, result: Result) {
     if (call.method == "getAttestationServiceSupport") {
-      var challenge: String?
-      if (call.argument<Long>("gcp") != null) {
-        challenge = call.argument<String>("challengeString").toString()
-        var attestation: AppDeviceIntegrity = AppDeviceIntegrity(context,call.argument<Long>("gcp")!!)
-        attestation.integrityTokenResponse.addOnSuccessListener { response ->
-          val integrityToken: String = response.token()
-          result.success(integrityToken.toString())
-        }.addOnFailureListener { e ->
-          println("integrityToken Error:="+e)
-//                    result.error()
-        }
+      val gcp = call.argument<Long>("gcp")
+      val challenge = call.argument<String>("challengeString")
 
+      if (gcp == null) {
+        result.error("-1", "Missing required argument 'gcp' for Android", null)
+        return
       }
+
+      val attestation = AppDeviceIntegrity(context, gcp, challenge)
+      attestation.integrityTokenResponse
+        .addOnSuccessListener { response ->
+          val integrityToken: String = response.token()
+          result.success(integrityToken)
+        }
+        .addOnFailureListener { e ->
+          result.error("-2", "Integrity API request failed: ${e.message}", null)
+        }
     } else {
       result.notImplemented()
     }
@@ -50,11 +54,11 @@ class AppDeviceIntegrityPlugin: FlutterPlugin, MethodCallHandler, ActivityAware 
   }
 
   override fun onDetachedFromActivity() {
-    TODO("Not yet implemented")
+    // no-op
   }
 
   override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {
-    TODO("Not yet implemented")
+    // no-op
   }
 
   override fun onAttachedToActivity(binding: ActivityPluginBinding) {
@@ -62,6 +66,6 @@ class AppDeviceIntegrityPlugin: FlutterPlugin, MethodCallHandler, ActivityAware 
   }
 
   override fun onDetachedFromActivityForConfigChanges() {
-    TODO("Not yet implemented")
+    // no-op
   }
 }

@@ -30,6 +30,6 @@ void main() {
     expect(
         await appDeviceIntegrityPlugin.getAttestationServiceSupport(
             challengeString: 'UUID_TEST'),
-        '42');
+        'UUID_RESPONSE');
   });
 }
